@@ -75,15 +75,23 @@ def trainmodel():
         random_state=42,
         stratify=y_enc
     )
-
-    #1. SVM Classifier
-    clf = LinearSVC(loss='hinge')
-    clf.fit(X_train, y_train)
-    y_pred = clf.predict(X_test)
-
-    print ("Data has been trained on SVM with Score: " , metrics.f1_score(y_test, y_pred),end='')
     
-    return clf,vectorizer
+    #Classifiers used for comparisons
+    classifiers =[LinearSVC(loss='hinge'), RandomForestClassifier(),LogisticRegression(penalty='l2'),MultinomialNB() ]
+
+    mx = 0
+    for i in classifiers:
+        i.fit(X_train, y_train)
+        y_pred = i.predict(X_test)
+        score = metrics.f1_score(y_test, y_pred)
+        if(score > mx):
+            mx = score
+            clf = i
+        print ("Data has been trained with " ,i , " having score : " ,end='')
+        print('')
+        
+    
+    return clf, vectorizer
 
 def preprocess_text(messy_string):
     assert(type(messy_string) == str)
